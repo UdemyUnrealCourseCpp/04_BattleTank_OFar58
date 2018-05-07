@@ -7,7 +7,6 @@
 void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
 	if (GetControlledTank())
 		UE_LOG(LogTemp, Warning, TEXT("Tank Player Controller Possed with %s pawn"), *GetControlledTank()->GetName())
 }
@@ -22,7 +21,8 @@ void ATankPlayerController::AimTowardsCrossHair()
 	if (!GetControlledTank()) { return; }
 
 	FVector HitLocation; // OUT paramater
-	if (GetSightRayHitLocation(HitLocation))
+	bool bGotHitLocation = GetSightRayHitLocation(HitLocation);
+	if (bGotHitLocation)
 	{
 		GetControlledTank()->AimAt(HitLocation);
 	}

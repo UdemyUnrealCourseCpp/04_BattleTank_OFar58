@@ -8,6 +8,7 @@
 
 //Forward Declaration
 class UTankBarrel;
+class UTankTurret;
 
 // Tank Aiming Component e.g used for elevating the barrel
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -27,12 +28,15 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void SetBarrelReference(UTankBarrel* BarrelToSet);
+	void Inittialize(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet);
 
 	void AimAt(FVector HitLocation, float LaunchSpeed);
 	void MoveBarrelTowards(FVector AimLocation);
 
+
 private:
 	UTankBarrel* Barrel = nullptr;
-	
+	UTankTurret* Turret = nullptr;
+
+	FVector AimDirection;
 };
