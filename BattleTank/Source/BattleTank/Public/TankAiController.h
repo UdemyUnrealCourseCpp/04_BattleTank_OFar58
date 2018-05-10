@@ -19,7 +19,5 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	ATank* GetControlledTank() const;
-	ATank* GetPlayerTank() const;
-	
+	float AcceptableRadius = 3000; //i hope in cm
 };
