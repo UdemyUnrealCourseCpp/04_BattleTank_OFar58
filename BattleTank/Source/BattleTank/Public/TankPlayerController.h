@@ -7,6 +7,7 @@
 #include "TankPlayerController.generated.h"
 
 class ATank;
+class UTankAimingComponent;
 
 UCLASS()
 class BATTLETANK_API ATankPlayerController : public APlayerController
@@ -17,15 +18,19 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	UFUNCTION(BlueprintCallable, Category = "Setup")
+	ATank* GetControlledTank() const;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void FoundAimingComponent(UTankAimingComponent* AimingComponent);
+
 private:
-	
 	void AimTowardsCrossHair();
 
 	bool GetSightRayHitLocation(FVector& HitLocation) const;
 	bool GetLookVectorHitLocation(FVector LookDirection, FVector& HitLocation) const;
 	bool GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const;
-	ATank* GetControlledTank() const;
-
 private:
 	UPROPERTY(EditDefaultsOnly)
 	float CrossHairXLocation = 0.5;
@@ -35,6 +40,4 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	float LineTraceRange = 100000;
-
-	
 };

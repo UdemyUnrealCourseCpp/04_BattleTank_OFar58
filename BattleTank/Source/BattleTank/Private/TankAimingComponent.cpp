@@ -3,6 +3,7 @@
 #include "TankAimingComponent.h"
 #include "TankBarrel.h"
 #include "TankTurret.h"
+#include "Tank.h"
 #include "Engine/World.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -13,11 +14,13 @@ UTankAimingComponent::UTankAimingComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
-void UTankAimingComponent::Inittialize(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet)
+void UTankAimingComponent::InittialiseTankAiming(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet)
 {
-	if (!BarrelToSet || !TurretToSet) { return; }
+	if (!ensure(BarrelToSet) || !ensure(TurretToSet)) { return; }
 	Barrel = BarrelToSet;
 	Turret = TurretToSet;
+
+	Cast<ATank>(GetOwner())->SetBarrel(BarrelToSet);
 }
 // Called when the game starts
 void UTankAimingComponent::BeginPlay()
@@ -32,7 +35,7 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 {
-	if (!Barrel) { return; }
+	if (!ensure(Barrel)) { return; }
 
 	FVector OutLaunchVelocity;
 	FVector StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
@@ -63,7 +66,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 }
 void UTankAimingComponent::MoveBarrelTowards(FVector AimLocation)
 {
-	if (!Barrel || !Turret) { UE_LOG(LogTemp,Warning,TEXT("Barrel or turret not set!")); return; }
+	if (!ensure(Barrel) || !ensure(Turret)) { UE_LOG(LogTemp,Warning,TEXT("Barrel or turret not set!")); return; }
 	FRotator BarrelRotator = Barrel->GetForwardVector().Rotation();
 	FRotator AimAsRotator = AimLocation.Rotation();
 	FRotator DeltaRotator = AimAsRotator - BarrelRotator;

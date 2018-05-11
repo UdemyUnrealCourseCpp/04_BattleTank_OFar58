@@ -2,13 +2,19 @@
 
 #include "TankPlayerController.h"
 #include "Tank.h"
+#include "TankAimingComponent.h"
 #include "Engine/World.h"
 
 void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	if (GetControlledTank())
-		UE_LOG(LogTemp, Warning, TEXT("Tank Player Controller Possed with %s pawn"), *GetControlledTank()->GetName())
+
+	UTankAimingComponent* AimingComponent = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
+	if (ensure(AimingComponent))
+		FoundAimingComponent(AimingComponent);
+	else
+		UE_LOG(LogTemp, Warning, TEXT("Aiming Component not found on: %s"), *GetControlledTank()->GetName());
+
 }
 void ATankPlayerController::Tick(float DeltaTime)
 {
@@ -18,7 +24,7 @@ void ATankPlayerController::Tick(float DeltaTime)
 }
 void ATankPlayerController::AimTowardsCrossHair()
 {
-	if (!GetControlledTank()) { return; }
+	if (!ensure(GetControlledTank())) { return; }
 
 	FVector HitLocation; // OUT paramater
 	bool bGotHitLocation = GetSightRayHitLocation(HitLocation);
@@ -27,7 +33,6 @@ void ATankPlayerController::AimTowardsCrossHair()
 		GetControlledTank()->AimAt(HitLocation);
 	}
 }
-
 //Get world location if linetrace through crosshair ,true if hits LandScape
 bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation) const
 {
