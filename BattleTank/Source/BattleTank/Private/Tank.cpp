@@ -25,12 +25,6 @@ void ATank::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (ensure(tanklol))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("VALID TankLol is a good!!!"));
-	}
-	else 
-		UE_LOG(LogTemp, Error, TEXT("TankLol is a nullptr!!!"));
 }
 // Called to bind functionality to input
 void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
