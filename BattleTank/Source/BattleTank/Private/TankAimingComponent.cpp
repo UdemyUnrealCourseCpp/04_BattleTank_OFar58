@@ -3,7 +3,7 @@
 #include "TankAimingComponent.h"
 #include "TankBarrel.h"
 #include "TankTurret.h"
-#include "Tank.h"
+#include "Projectile.h" 
 #include "Engine/World.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -19,8 +19,6 @@ void UTankAimingComponent::InittialiseTankAiming(UTankBarrel* BarrelToSet, UTank
 	if (!ensure(BarrelToSet) || !ensure(TurretToSet)) { return; }
 	Barrel = BarrelToSet;
 	Turret = TurretToSet;
-
-	Cast<ATank>(GetOwner())->SetBarrel(BarrelToSet);
 }
 // Called when the game starts
 void UTankAimingComponent::BeginPlay()
@@ -33,7 +31,7 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
+void UTankAimingComponent::AimAt(FVector HitLocation)
 {
 	if (!ensure(Barrel)) { return; }
 
@@ -58,10 +56,6 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 		AimDirection = OutLaunchVelocity.GetSafeNormal();
 		MoveBarrelTowards(AimDirection);
 	}
-	//else {
-	/*	float Time = GetWorld()->GetTimeSeconds();
-		UE_LOG(LogTemp, Warning, TEXT("%f: NO aim Solution found!!!"), Time);
-	}*/
 	// If no solution found do nothing
 }
 void UTankAimingComponent::MoveBarrelTowards(FVector AimLocation)
@@ -73,4 +67,23 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimLocation)
 
 	Barrel->Elevate(DeltaRotator.Pitch);
 	Turret->Turn(DeltaRotator.Yaw);
+}
+void UTankAimingComponent::Fire()
+{
+	if (!ensure(Barrel) || !ensure(ProjectileBlueprint)) { return; }
+
+	bool isReloaded = (FPlatformTime::Seconds() - LastFireTime) > ReloadTimeInSeconds;
+
+	if (isReloaded) {
+
+		// Spawn a projectile at the socket location on the barrel
+		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
+			ProjectileBlueprint,
+			Barrel->GetSocketLocation(FName("Projectile")),
+			Barrel->GetSocketRotation(FName("Projectile"))
+			);
+		Projectile->LaunchProjectile(LaunchSpeed);
+
+		LastFireTime = FPlatformTime::Seconds();
+	}
 }
