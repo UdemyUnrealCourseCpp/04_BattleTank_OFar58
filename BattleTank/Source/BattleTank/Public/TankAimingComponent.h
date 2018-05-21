@@ -12,6 +12,7 @@ enum class EFiringState : uint8
 	Reloading,
 	Aiming,
 	Locked,
+	OutOfAmmo
 };
 
 //Forward Declaration
@@ -34,26 +35,37 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(BlueprintReadOnly)
-	EFiringState FiringState = EFiringState::Locked;
+	EFiringState FiringState = EFiringState::Reloading;
+
 public:	
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
+	
 	UFUNCTION(BlueprintCallable)
 	void InittialiseTankAiming(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet);
 
 	UFUNCTION(BlueprintCallable)
 	void Fire();
 
+	UFUNCTION(BlueprintCallable)
+	int32 GetRoundsLeft() const;
+
 	void AimAt(FVector HitLocation);
 	void MoveBarrelTowards(FVector AimLocation);
 
+	EFiringState GetFiringState() const;
+
 private:
+	bool IsBarrelMoving();
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
 	float LaunchSpeed = 8000;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
 	float ReloadTimeInSeconds = 3;
+
+	UPROPERTY(EditAnywhere, Category = "Firing")
+	int32 RoundsLeft = 3;
 
 	double LastFireTime = 0;
 

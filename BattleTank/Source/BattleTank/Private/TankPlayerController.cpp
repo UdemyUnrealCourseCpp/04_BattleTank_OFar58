@@ -2,7 +2,22 @@
 
 #include "TankPlayerController.h"
 #include "TankAimingComponent.h"
+#include "Tank.h"
 #include "Engine/World.h"
+
+void ATankPlayerController::SetPawn(APawn* InPawn)
+{
+	Super::SetPawn(InPawn);
+
+	if (InPawn)
+	{
+		ATank* PossesedTank = Cast<ATank>(InPawn);
+		if (!ensure(PossesedTank)) { return; }
+
+		//Subsicribe Received
+		PossesedTank->OnDeath.AddUniqueDynamic(this, &ATankPlayerController::OnPossesedTankDeath);
+	}
+}
 
 void ATankPlayerController::BeginPlay()
 {
@@ -11,7 +26,14 @@ void ATankPlayerController::BeginPlay()
 	AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
 	if (ensure(AimingComponent))
 		FoundAimingComponent(AimingComponent);
+
 }
+void ATankPlayerController::OnPossesedTankDeath()
+{
+	//UE_LOG(LogTemp, Warning, TEXT("Player TANK IS DEAD!"));
+	StartSpectatingOnly();
+}
+
 void ATankPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

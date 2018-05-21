@@ -14,7 +14,10 @@ class BATTLETANK_API ATankPlayerController : public APlayerController
 	GENERATED_BODY()
 	
 public:
+	virtual void SetPawn(APawn* InPawn) override;
+
 	virtual void BeginPlay() override;
+	
 	virtual void Tick(float DeltaTime) override;
 
 protected:
@@ -30,6 +33,9 @@ private:
 	bool GetLookVectorHitLocation(FVector LookDirection, FVector& HitLocation) const;
 	bool GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const;
 private:
+	UFUNCTION()
+	void OnPossesedTankDeath();
+
 	UPROPERTY(EditDefaultsOnly)
 	float CrossHairXLocation = 0.5;
 
